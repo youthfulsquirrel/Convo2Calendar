@@ -3,4 +3,4 @@ tokenizer/*
 .conda
 .git
 Llama-2-7b-hf/
-archive_notes.txt
+archive_note.txt
