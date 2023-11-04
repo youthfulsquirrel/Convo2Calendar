@@ -32,18 +32,14 @@ Jane Smith: I agree.
 
 John Doe: Okay, then. Here's what I propose:
 
-Jane and Mary, you will be responsible for researching the cost of implementing the green features that you have proposed.
-I will be responsible for researching vendors who can provide these green features.
+Jane and Mary, you will be responsible for researching the cost of implementing the green features that you have proposed. Update the team in 2 weeks.
+I will be responsible for researching vendors who can provide these green features. I'll update you guys by 16 Oct.
 Jane Smith: Sounds good.
 
 Mary Green: Me too.
 
-John Doe: Great. Let's give ourselves two weeks to complete this research. Then, we can meet again to discuss our findings and make a decision about which green features we want to implement.
-
 Jane Smith: Perfect.
 
 Mary Green: Sounds good.
-
-John Doe: Okay, then. Let's get started.
 
 End Time: 14:27 PST
