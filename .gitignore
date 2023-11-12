@@ -4,4 +4,4 @@ tokenizer/*
 .git
 Llama-2-7b-hf/
 archive_note.txt
-_pycache_
+__pycache__
