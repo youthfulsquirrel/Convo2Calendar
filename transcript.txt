@@ -1,15 +1,9 @@
 
-SPEAKER 1 0:00:00
+SPEAKER 2 0:00:00
 
-SPEAKER 2 0:00:09
+SPEAKER 3 0:00:38
 
-SPEAKER 1 0:00:38
+SPEAKER 1 0:01:20
 
-SPEAKER 3 0:01:20
-
-SPEAKER 4 0:01:33
-
-SPEAKER 1 0:01:58
-
-SPEAKER 3 0:02:04
-and we're spending a huge amount of money for no reason. 
+SPEAKER 4 0:01:58
+And we're spending a huge amount of money for no reason. 
