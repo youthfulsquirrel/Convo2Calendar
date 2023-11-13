@@ -2,7 +2,6 @@ import whisper
 import datetime
 from time import sleep
 import subprocess
-
 import torch
 import pyannote.audio
 from pyannote.audio.pipelines.speaker_verification import PretrainedSpeakerEmbedding
@@ -17,7 +16,10 @@ import os
 from pydub import AudioSegment
 import librosa
 import soundfile
+import streamlit as st
 
+def time_s(secs):
+        return datetime.timedelta(seconds=round(secs))
 
 def downloader(uploaded_file, run_path):
     audio_bytes = uploaded_file.read()
@@ -31,7 +33,7 @@ def downloader(uploaded_file, run_path):
     path = download_path[:-3] + 'wav'
     return (path)
 
-def transcribing(path, num_speakers):
+def transcribing(path, run_path, num_speakers):
     embedding_model = PretrainedSpeakerEmbedding( 
     "speechbrain/spkrec-ecapa-voxceleb",
     device=torch.device("cuda:1"))
@@ -72,15 +74,13 @@ def transcribing(path, num_speakers):
     labels = clustering.labels_
     for i in range(len(segments)):
         segments[i]["speaker"] = 'SPEAKER ' + str(labels[i] + 1)
-    def time(secs):
-        return datetime.timedelta(seconds=round(secs))
 
-    f = open("transcript.txt", "w")
+    f = open(os.path.join(run_path,"transcript.txt"), "w")
 
     for (i, segment) in enumerate(segments):
         if i == 0 or segments[i - 1]["speaker"] != segment["speaker"]:
-            f.write("\n" + segment["speaker"] + ' ' + str(time(segment["start"])) + '\n')
-    f.write(segment["text"][1:] + ' ')
+            f.write("\n" + segment["speaker"] + ' ' + str(time_s(segment["start"])) + '\n')
+        f.write(segment["text"][1:] + ' ')
     f.close()
     identity_speaker = {}
     for (i, segment) in enumerate(segments):
@@ -90,11 +90,11 @@ def transcribing(path, num_speakers):
             if i+1 == len(segments) or segments[i + 1]["speaker"] != segment["speaker"]:
                 end_time = int(segment["end"])
                 identity_speaker[segment["speaker"]] = [start_time,end_time]
-    return (identity_speaker)
+    return (identity_speaker, segments)
 
 def sample_audio(path, run_path, identity_speaker):
     rate, data = wavfile.read(path) 
-    unique_speakers_dir = 'pyannote_transcripts'
+    unique_speakers_dir = 'unique_speakers'
 
     for speaker, speaker_time in identity_speaker.items():
         wavfile.write(os.path.join(run_path,unique_speakers_dir,speaker+'.wav'), rate, data[rate*speaker_time[0]+3:rate*(speaker_time[1]-3)])
@@ -104,3 +104,31 @@ def sample_audio(path, run_path, identity_speaker):
     # List all .wav files in the 'unique_speakers' directory
     wav_files = [f for f in os.listdir(os.path.join(run_path,unique_speakers_dir)) if f.endswith('.wav')]
     return (wav_files)
+
+def transcript_w_names(run_path, segments, speakers):
+    print(run_path)
+    with open(os.path.join(run_path,"final_transcript.txt"), "w") as f:
+        print('printing segments')
+        f.write('trial testing')
+    # for (i, segment) in enumerate(segments):
+    #     print(segments[i - 1]["speaker"])
+    #     print(segment["speaker"])
+    #     if i == 0 or segments[i - 1]["speaker"] != segment["speaker"]:
+    #         print(segment["speaker"], '1')
+    #         print(str(time_s(segment["start"])), '____2')
+    #         f.write("\n" + segment["speaker"] + ' ' + str(time_s(segment["start"])) + '\n')
+    #         f.write('testing testing...')
+    #     f.write(segment["text"][1:] + ' ')
+    # f.close()
+    new_transcript = os.path.join(run_path,"final_transcript.txt")
+    print('completed writing', new_transcript)
+    return (os.path.join(run_path,"final_transcript.txt"))
+
+def simple_transcript(run_path, segments, speakers):
+    if not os.path.exists(os.path.join(run_path,"final_transcript.txt")):
+        with open(os.path.join(run_path,"final_transcript.txt"), "w") as f:
+            for (i, segment) in enumerate(segments):
+                if i == 0 or segments[i - 1]["speaker"] != segment["speaker"]:
+                    f.write("\n" + speakers[segment["speaker"]] + ' ' + str(time_s(segment["start"])) + '\n')
+                f.write(segment["text"][1:] + ' ')
+    return (os.path.join(run_path,"final_transcript.txt"))
