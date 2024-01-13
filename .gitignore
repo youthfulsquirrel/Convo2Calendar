@@ -3,5 +3,5 @@ tokenizer/*
 .conda
 .git
 Llama-2-7b-hf/
-archive_note.txt
+keys/
 __pycache__
