@@ -6,3 +6,5 @@ Llama-2-7b-hf/
 keys/
 __pycache__
 sample_audio/
+streamlit_main1_aws.ppk
+streamlit_main1.pem

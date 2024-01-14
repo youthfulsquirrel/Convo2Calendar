@@ -21,7 +21,7 @@ model_id = 'meta-llama/Llama-2-7b-chat-hf'
 
 device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
 
-with open(r'keys/archive_note.txt', 'r') as fp:
+with open(r'../keys/archive_note.txt', 'r') as fp:
     # read all lines using readline()
     lines = fp.readlines()
     for line in lines:
