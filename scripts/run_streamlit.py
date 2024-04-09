@@ -12,8 +12,9 @@ def create_run_dir():
 def create_subfolders():
     os.makedirs(dir_name, exist_ok=True)
     print(f'created folder {os.path.abspath(dir_name)}')
-    os.makedirs(os.path.join(dir_name, 'user_upload'), exist_ok=True)
-    os.makedirs(os.path.join(dir_name, 'unique_speakers'), exist_ok=True)
+    os.makedirs(os.path.join(dir_name, 'user_upload'), exist_ok=True) #user input
+    os.makedirs(os.path.join(dir_name, 'unique_speakers'), exist_ok=True) #user input
+    os.makedirs(os.path.join(dir_name, 'metadata'), exist_ok=True) #system generated output
 
     # Get the path of the current directory
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -27,3 +28,5 @@ def create_subfolders():
 if __name__ == '__main__':
     dir_name = create_run_dir()
     create_subfolders()
+
+    
