@@ -7,6 +7,7 @@ from wordcloud import WordCloud
 from textblob import TextBlob
 import matplotlib.pyplot as plt
 from docx import Document
+from docx.shared import Cm
 import io
 import base64
 import traceback
@@ -32,7 +33,8 @@ def analyze_data(csv_file, transcript_text):
 
         # Create a Word document
         doc = Document()
-        doc.add_heading('Speaker Analysis', level=1)
+        doc.add_heading('Meeting Analysis', level=1)
+        doc.add_heading('Speaker Analysis', level=3)
         doc.add_paragraph(f"Spoke the most: {max_speaker} ({max_duration:.2f} seconds)")
         doc.add_paragraph(f"Spoke the least: {min_speaker} ({min_duration:.2f} seconds)")
         doc.add_paragraph(f"Average speaking time: {average_duration:.2f} seconds")
@@ -48,17 +50,14 @@ def analyze_data(csv_file, transcript_text):
         top_words = word_freq.most_common(10)
 
         total_words = len(all_words)
-
-        print("Basic Analysis")
-        print("Total number of words:", total_words)
         meta_data['total_words'] = total_words
 
         # Common trigrams
         trigram_freq = FreqDist(nltk.trigrams(all_words))
         common_trigrams = trigram_freq.most_common(5)
         doc.add_heading('Common Triagrams', 3)
-        doc.add_paragraph(f"1st common trigram:{common_trigrams[0][0] }, (Count:{common_trigrams[0][1]} ) \n")
-        doc.add_paragraph(f"2nd common trigram:{common_trigrams[4][0] }, (Count:{common_trigrams[4][1]} ) \n")
+        doc.add_paragraph(f"1st common trigram:{common_trigrams[0][0] }, (Count:{common_trigrams[0][1]} )")
+        doc.add_paragraph(f"2nd common trigram:{common_trigrams[4][0] }, (Count:{common_trigrams[4][1]} )")
         trigram_dict ={'trigram_list':[common_trigrams[0][0], common_trigrams[4][0]], 'count_list': [common_trigrams[0][1],common_trigrams[4][1]]}
         meta_data['trigrams'] = trigram_dict
 
@@ -93,15 +92,16 @@ def analyze_data(csv_file, transcript_text):
         plt.axis('off')
         word_cloud_path = f'../runs/Part2/run1/word_cloud.png'
         plt.savefig(word_cloud_path, dpi = 200)
-
-        doc.add_heading('Visual analysis', 3)
-        doc.add_picture(top_words_path)
-        doc.add_picture(word_cloud_path)
+        
+        doc.add_page_break() 
+        doc.add_heading('Word Frequency',3)
+        doc.add_paragraph(f'Total Word Count: {total_words}')
+        doc.add_picture(top_words_path, height = Cm(12) )
+        doc.add_heading('Word Cloud',3)
+        doc.add_picture(word_cloud_path, width = Cm(15))
         
         with open(doc_path, "wb") as f:
             doc.save(f)
-        print('__________________+++_________________+++____________________++__________________')
-        print(meta_data)
         return meta_data
 
     except Exception as e:
@@ -111,7 +111,7 @@ def analyze_data(csv_file, transcript_text):
 
 # Streamlit app
 def main():
-    st.title("Language Analysis Tool")
+    st.title("Meeting Analysis")
 
     # File uploader for CSV file
     csv_file = st.file_uploader("Upload CSV file", type=["csv"])
@@ -123,25 +123,24 @@ def main():
     if st.button("Analyze"):
         if csv_file is not None and transcript_text:
             meta_data = analyze_data(csv_file, transcript_text)
-            st.text(meta_data)
-
-            
+           
             # Display analysis results
-            st.header("Analysis Results")
-
-            # Save Word document to file
-            
-
+            st.header("Results")
             # Provide download link for Word document
             download_link = generate_download_link(doc_path, "Download Word Document")
             st.markdown(download_link, unsafe_allow_html=True)
+            st.write('**JSON**')
             st.markdown(meta_data)
+        elif csv_file is None:
+            st.text('Please upload csv file to proceed')
+        elif transcript_text is None:
+            st.text('Transcript cannot be empty')
 
 def generate_download_link(file_path, link_text):
     with open(file_path, "rb") as file:
         data = file.read()
         b64 = base64.b64encode(data).decode('utf-8')
-        href = f'<a href="data:application/octet-stream;base64,{b64}" download="{file_path}">{link_text}</a>'
+        href = f'<a href="data:application/octet-stream;base64,{b64}" download="run1_output.docx">{link_text}</a>'
     return href
 
 if __name__ == "__main__":
