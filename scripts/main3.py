@@ -10,7 +10,10 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from langchain.llms import HuggingFaceHub
 import os
+from tika import parser
 
+
+# don't need to use, replaced with get_text_from_docs function, which can read non-PDF docs also
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -19,6 +22,37 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text()
     return text
 
+def generate_output_filename():
+    # Find the next available file number
+    file_number = 1
+    while True:
+        filename = f"../main3/text{file_number:03d}.txt"
+        if not os.path.exists(filename):
+            return filename
+        file_number += 1
+
+def get_text_from_docs(pdf_docs):
+    # Generate the output text file name
+    output_text_file = generate_output_filename()
+
+    content_string = ""  # Initialize an empty string to accumulate content
+
+    for pdf in pdf_docs:
+        results = parser.from_file(pdf)
+        # Extract text content and append to content_string
+        content_list = results['content'].strip().split('/')
+        content = ''.join(content_list[:-2]).strip()
+        content_string += f"ppt title: {results['metadata']['resourceName'][0][2:-1]}\n"
+        content_string += f"ppt owner: {results['metadata']['dc:creator']}\n"
+        content_string += f"date created: {results['metadata']['dcterms:created']}\n"
+        content_string += f"last modified date: {results['metadata']['dcterms:modified']}\n"
+        content_string += f"{content}\n\nend of text for '{results['metadata']['resourceName'][0][2:-1]}'\n\n"
+
+    # Write content_string to the output text file
+    with open(output_text_file, 'w') as file:
+        file.write(content_string)
+
+    return content_string
 
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
@@ -92,7 +126,7 @@ def main():
         if st.button("Process"):
             with st.spinner("Processing"):
                 # get pdf text
-                raw_text = get_pdf_text(pdf_docs)
+                raw_text = get_text_from_docs(pdf_docs)
 
                 # get the text chunks
                 text_chunks = get_text_chunks(raw_text)
