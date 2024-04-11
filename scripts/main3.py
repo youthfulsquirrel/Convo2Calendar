@@ -36,16 +36,18 @@ def get_text_from_docs(pdf_docs):
     output_text_file = generate_output_filename()
 
     content_string = ""  # Initialize an empty string to accumulate content
-
+    meta_data_fields = {'dc:creator': 'file owner',
+                        'dcterms:created': 'date created',
+                        'dcterms:modified': 'last modified date'}
     for pdf in pdf_docs:
         results = parser.from_file(pdf)
         # Extract text content and append to content_string
         content_list = results['content'].strip().split('/')
         content = ''.join(content_list[:-2]).strip()
-        content_string += f"ppt title: {results['metadata']['resourceName'][0][2:-1]}\n"
-        content_string += f"ppt owner: {results['metadata']['dc:creator']}\n"
-        content_string += f"date created: {results['metadata']['dcterms:created']}\n"
-        content_string += f"last modified date: {results['metadata']['dcterms:modified']}\n"
+        content_string += f"file title: {results['metadata']['resourceName'][0][2:-1]}\n"
+        for field in meta_data_fields:
+            if field in results['metadata']:
+                content_string += f"{meta_data_fields[field]}: {results['metadata'][field]}\n"
         content_string += f"{content}\n\nend of text for '{results['metadata']['resourceName'][0][2:-1]}'\n\n"
 
     # Write content_string to the output text file
@@ -88,7 +90,10 @@ def get_conversation_chain(vectorstore):
 
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
+    st.session_state.chat_history = response['chat_history'][::-1]
+    print ('______________________________________________________________')
+    print (response['chat_history'])
+    print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++===')
 
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
@@ -100,12 +105,13 @@ def handle_userinput(user_question):
 
 
 def main():
+    user_question = None
     with open(r'../keys/archive_note.txt', 'r') as fp:
         # read all lines using readline()
         lines = fp.readlines()
         for line in lines:
             os.environ['OPENAI_API_KEY'] = line
-    st.set_page_config(page_title="Chat with multiple PDFs",
+    st.set_page_config(page_title="Chat with your files",
                        page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
@@ -114,15 +120,15 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Chat with multiple PDFs :books:")
-    user_question = st.text_input("Ask a question about your documents:")
+    st.header("Chat with multiple files (e.g .pdf, .pptx) :books:")
+    user_question = st.text_input("Ask your question here:")
     if user_question:
         handle_userinput(user_question)
 
     with st.sidebar:
         st.subheader("Your documents")
         pdf_docs = st.file_uploader(
-            "Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
+            " ", accept_multiple_files=True)
         if st.button("Process"):
             with st.spinner("Processing"):
                 # get pdf text
@@ -137,6 +143,8 @@ def main():
                 # create conversation chain
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
+                st.text(get_conversation_chain(
+                    vectorstore))
 
 
 if __name__ == '__main__':

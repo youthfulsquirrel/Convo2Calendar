@@ -126,7 +126,7 @@ def main():
            
             # Display analysis results
             st.header("Results")
-            # Provide download link for Word document
+            # Provide download link for Word documentmet
             download_link = generate_download_link(doc_path, "Download Word Document")
             st.markdown(download_link, unsafe_allow_html=True)
             st.write('**JSON**')
