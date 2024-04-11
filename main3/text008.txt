@@ -1,0 +1,34 @@
+file title: test_out_tika.pptx
+file owner: Qi Xuan
+date created: 2024-03-19T06:29:57Z
+last modified date: 2024-03-19T09:36:51Z
+PowerPoint Presentation
+
+	Events	Group A	Group B
+	Party	Monday	Tuesday
+	Paintball	January	February
+	Team-bonding	Every 1st Friday of the month	Every 2nd Friday of the month
+
+1
+
+
+My slide
+Text1
+Text2
+Text3
+
+Fig. 1: carton boxes
+2
+
+
+Last slide
+Sample text
+Sample text 2
+Sample text 3
+3
+
+
+image1.jpg
+
+end of text for 'test_out_tika.pptx'
+
