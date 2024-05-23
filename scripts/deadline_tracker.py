@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from docxtpl import DocxTemplate
-from myfunctions2 import *
+from myfunction import *
 import io
 
 bio = io.BytesIO()
@@ -25,12 +25,12 @@ if uploaded_file is not None:
     st.markdown('loading... 6/6 completed')
     st.markdown(context)
     if transcript is not None:
-        with open('main2/user_upload/template.docx', 'wb') as f: 
+        with open('deadline_tracker/user_upload/template.docx', 'wb') as f: 
             f.write(bytes_data)
-        template = DocxTemplate("main2/user_upload/template.docx")
+        template = DocxTemplate("deadline_tracker/user_upload/template.docx")
         template.render(context)
-        template.save("main2/dynamic_table_out.docx")
-    if os.path.exists("main2/dynamic_table_out.docx"):
-        with open('main2/dynamic_table_out.docx', 'rb') as f:
-            st.download_button('Download Formatted Meeting', f, file_name='main2/dynamic_table_out.docx')
+        template.save("deadline_tracker/dynamic_table_out.docx")
+    if os.path.exists("deadline_tracker/dynamic_table_out.docx"):
+        with open('deadline_tracker/dynamic_table_out.docx', 'rb') as f:
+            st.download_button('Download Formatted Meeting', f, file_name='deadline_tracker/dynamic_table_out.docx')
     

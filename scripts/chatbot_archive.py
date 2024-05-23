@@ -14,6 +14,7 @@ from tika import parser
 import langchain
 langchain.verbose = False
 
+#run_path = 
 
 # don't need to use, replaced with get_text_from_docs function, which can read non-PDF docs also
 def get_pdf_text(pdf_docs):
@@ -28,7 +29,7 @@ def generate_output_filename():
     # Find the next available file number
     file_number = 1
     while True:
-        filename = f"../main3/text{file_number:03d}.txt"
+        filename = f"../{run_path}/text{file_number:03d}.txt"
         if not os.path.exists(filename):
             return filename
         file_number += 1
